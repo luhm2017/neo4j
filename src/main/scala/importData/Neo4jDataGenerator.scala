@@ -5,7 +5,7 @@ import java.io.File
 import com.google.common.base.Splitter
 import org.apache.commons.lang3.StringUtils
 import org.neo4j.graphdb._
-//import org.slf4j.LoggerFactory
+import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -15,7 +15,7 @@ import scala.io.Source
   * Created by zhijie.guo on 2017/12/27 0031.
   */
 class Neo4jDataGenerator /*extends DataGenerator*/ {
-  //private val logger = LoggerFactory.getLogger("Neo4jDataGenerator")
+  private val logger = LoggerFactory.getLogger("Neo4jDataGenerator")
   val BATCH_SIZE: Int = 3000
 
   private var graphdb: GraphDatabaseService = null
@@ -59,6 +59,8 @@ class Neo4jDataGenerator /*extends DataGenerator*/ {
             case e: Exception => {
               println("createNode failure，current filename"+ currentFilePath +"，curent line" + i + " content:" + line + " \n" /*+
                 "exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString*/)
+              logger.info("createNode failure，current filename"+ currentFilePath +"，curent line" + i + " content:" + line + " \n" /*+
+                "exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString*/)
             }
           }
 
@@ -73,6 +75,7 @@ class Neo4jDataGenerator /*extends DataGenerator*/ {
               lineList.clear()
               //list.clear()
               println("batch commited success ，filename is ："+ currentFilePath + "， batchStartAppNo is " + batchStartAppNo)
+              logger.info("batch commited success ，filename is ："+ currentFilePath + "， batchStartAppNo is " + batchStartAppNo)
             }
           }
           catch {
@@ -87,6 +90,10 @@ class Neo4jDataGenerator /*extends DataGenerator*/ {
               println("Commited failure!!! "+batchStartAppNo+ " exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString)
               println("commited failure!!! "+ "current filename"+ currentFilePath + "StartAppNo:" + batchStartAppNo  )
               println("========================================================================")
+              logger.info("========================================================================")
+              logger.info("Commited failure!!! "+batchStartAppNo+ " exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString)
+              logger.info("commited failure!!! "+ "current filename"+ currentFilePath + "StartAppNo:" + batchStartAppNo  )
+              logger.info("========================================================================")
             }
           }
         }

@@ -6,13 +6,13 @@ import org.joda.time.DateTime
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.io.fs.FileUtils
-//import org.slf4j.LoggerFactory
+import org.slf4j.LoggerFactory
 
 /**
-  * Created by zhijie.guo on 2017/12/27 0003.
+  * Created by adm on 2017/12/27 0003.
   */
 object EmbeddedModelApplyGraph {
-  //private val logger = LoggerFactory.getLogger("EmbeddedModelApplyGraph")
+  private val logger = LoggerFactory.getLogger("EmbeddedModelApplyGraph")
 
   //从清洗好的表中导入数据
   def main(args: Array[String]): Unit = {
@@ -21,15 +21,18 @@ object EmbeddedModelApplyGraph {
       val filepath=args(0) // /data/
       val mainTime = DateTime.now()
       println("start EmbeddedModelApplyGraph time " + DateTime.now())
+      logger.info("start EmbeddedModelApplyGraph time " + DateTime.now())
       val inputPath=filepath+"/neo4j_data/"  //输入文件路径
       val outputPath=filepath+"/neo4j_db/graph.db" //输出数据库文件
       generateGraphData(filepath,inputPath,outputPath)//建图逻辑代码
       val endtime = DateTime.now()
       println("end EmbeddedModelApplyGraph time " + endtime + " run long time " + (endtime.getMillis - mainTime.getMillis) / 36000)
+      logger.info("end EmbeddedModelApplyGraph time " + endtime + " run long time " + (endtime.getMillis - mainTime.getMillis) / 36000)
+
     } catch {
       case e: Exception => {
-        println("main exception:" + e.getMessage + " \n" +
-          "exception2:" + e.getStackTraceString)
+        println("main exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString)
+        logger.info("main exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString)
       }
     }
 
