@@ -1,5 +1,3 @@
-package importData
-
 import java.io.File
 
 import com.google.common.base.Splitter
@@ -239,7 +237,7 @@ class Neo4jDataGenerator /*extends DataGenerator*/ {
       var emailNode: Option[Node] = nodeMap.get(email)
       if (!emailNode.isDefined) {
         val tmpNode = graphdb.createNode(Labels.Email)
-        tmpNode.setProperty(CommonConstant.CONTENTKEY, list.get(4))
+        tmpNode.setProperty(CommonConstant.CONTENTKEY, email)
         nodeMap.put(email, tmpNode)
         emailNode = nodeMap.get(email)
       }

@@ -1,5 +1,3 @@
-package importData;
-
 import org.neo4j.graphdb.Label;
 
 

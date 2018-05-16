@@ -1,5 +1,3 @@
-package importData
-
 import java.io.File
 
 import org.joda.time.DateTime
