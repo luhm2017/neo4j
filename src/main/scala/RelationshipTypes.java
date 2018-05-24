@@ -7,5 +7,5 @@ import org.neo4j.graphdb.RelationshipType;
  */
 public enum RelationshipTypes implements RelationshipType {
     //定义边关系类别
-    IDCARD,BANKCARD,RETURNBANKCARD ,MYPHONE, EMAIL, CONTACT, EMERGENCY, DEVICE;
+    IDCARD,BANKCARD,RETURNBANKCARD ,MYPHONE, EMAIL, CONTACT, EMERGENCY, DEVICE,COMPANYPHONE;
 }
