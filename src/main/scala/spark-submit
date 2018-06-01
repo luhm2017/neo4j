@@ -14,7 +14,7 @@
 ##导数程序配置
 ###===========================================================
 执行neo4j导入程序
-nohup java -jar neo4j-1.0-SNAPSHOT.jar /home/neo4j/ >temp.log &
+nohup java -jar neo4j-1.0-SNAPSOT.jar /home/neo4j/ >temp.log &
 ##neo4j密码  1qaz2wsx
 
 
