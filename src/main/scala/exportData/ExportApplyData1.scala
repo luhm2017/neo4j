@@ -46,7 +46,7 @@ object ExportApplyData1 {
 
         try{
             //按月分区跑数
-            val sqlDF = hc.sql(s"SELECT order_id FROM $database.$table where pt_month = '$pt_month' limit 1000").map{
+            val sqlDF = hc.sql(s"SELECT order_id FROM $database.$table where pt_month = '$pt_month'").map{
               pr =>
                 val orderId = pr.getString(0)
                 "match (n:Apply {contentKey:'"+orderId+"'})-[r:"+relations+"]-(p)-[r1:"+relations+"]-(m:Apply) where n.applyDate > m.applyDate " +
@@ -55,7 +55,7 @@ object ExportApplyData1 {
                     " m.historyDueDay,m.failReason,m.performance,m.cert_no  limit 100000").toString
             }
             println("================runQueryApplyByApplyLevel1 start ========")
-            sqlDF.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/sql/")
+            //sqlDF.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/sql/")
             val rddResult = sqlDF.map{
                 row =>
                   val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
@@ -66,23 +66,23 @@ object ExportApplyData1 {
                   while(rs.next()){
                     buff += s"${rs.getString("n.contentKey")},${rs.getString("n.applyDate")},${rs.getString("n.applyLastState")},${rs.getString("n.applyState")}," +
                       s"${rs.getString("n.currentDueDay")},${rs.getString("n.historyDueDay")},${rs.getString("n.failReason")},${rs.getString("n.performance")},${rs.getString("n.cert_no")}," +
-                      s"${rs.getString("r")},${rs.getString("p.contentKey")},${rs.getString("r1")},${rs.getString("m.contentKey")}${rs.getString("m.applyDate")}," +
+                      s"${rs.getString("r")},${rs.getString("p.contentKey")},${rs.getString("r1")},${rs.getString("m.contentKey")},${rs.getString("m.applyDate")}," +
                       s"${rs.getString("m.applyLastState")},${rs.getString("m.applyState")},${rs.getString("m.currentDueDay")},${rs.getString("m.historyDueDay")},${rs.getString("m.failReason")},${rs.getString("m.performance")},${rs.getString("m.cert_no")}"
                   }
                   //每次连接释放，如果conn放在外面，会报错 Task not serializable
                   con.close()
                 buff.toList
-            }.repartition(100)
+            }.repartition(10)
             println("========================runQueryApplyByApplyLevel1 end===============================")
-            println("======================== 一度关联的订单总数： ")
-            println("========================组装一度关联结果===============================")
-            rddResult.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/spark/")
-            val degree1 = rddResult.flatMap(k => k)/*.distinct()*/
+            println("======================== 一度关联的订单总数： "+ rddResult.count())
+            println("========================组装一度关联结果===============================" )
+            //rddResult.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/spark/")
+            val degree1 = rddResult.flatMap(k => k).distinct()
               .map { v =>
               val arr: Array[String] = v.split(",")
               Row(arr(0),arr(1),arr(2),arr(3),arr(4),arr(5),arr(6),arr(7),arr(8),arr(9),arr(10),arr(11),arr(12),arr(13),arr(14),arr(15),arr(16),arr(17),arr(18),arr(19),arr(20))
-            }.repartition(1000)
-            println("=======================================一度关联总记录数：")
+            }.repartition(10)
+            //println("=======================================一度关联总记录数：")
 
             //映射字段类型
             val schema = StructType(

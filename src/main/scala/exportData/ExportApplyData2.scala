@@ -46,7 +46,7 @@ object ExportApplyData2 {
 
     try{
       //按月分区跑数
-      val sqlDF = hc.sql(s"SELECT order_id FROM $database.$table where pt_month = '$pt_month' limit 1000").map{
+      val sqlDF = hc.sql(s"SELECT order_id FROM $database.$table where pt_month = '$pt_month' ").map{
         pr =>
           val orderId = pr.getString(0)
           "match (n:Apply {contentKey:'"+orderId+"'})-[r:"+relations+"]-(p)-[r1:"+relations+"]-(m:Apply)-[r2:"+relations+"]-(p2)-[r3:"+relations+"]-(m2:Apply)  " +
@@ -58,7 +58,7 @@ object ExportApplyData2 {
               "m2.contentKey,m2.applyDate,m2.applyLastState,m2.applyState,m2.currentDueDay,m2.historyDueDay,m2.failReason,m2.performance,m2.cert_no  limit 100000").toString
       }
       println("================runQueryApplyByApplyLevel2 start ========")
-      sqlDF.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/sql2/")
+      //sqlDF.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/sql2/")
       val rddResult = sqlDF.map{
         row =>
           val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
@@ -76,19 +76,19 @@ object ExportApplyData2 {
           //每次连接释放，如果conn放在外面，会报错 Task not serializable
           con.close()
           buff.toList
-      }.repartition(100)
+      }.repartition(10)
       println("========================runQueryApplyByApplyLevel1 end===============================")
-      println("======================== 二度关联的订单总数： ")
+      println("======================== 二度关联的订单总数： "+ rddResult.count())
       println("========================组装二度关联结果===============================")
-      rddResult.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/spark2/")
+      //rddResult.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/spark2/")
       val degree2 = rddResult.flatMap(k => k)/*.distinct()*/
         .map { v =>
         val arr: Array[String] = v.split(",")
         Row(arr(0),arr(1),arr(2),arr(3),arr(4),arr(5),arr(6),arr(7),arr(8),
           arr(9),arr(10),arr(11),arr(12),arr(13),arr(14),arr(15),arr(16),arr(17),arr(18),
           arr(19),arr(20),arr(21),arr(22),arr(23),arr(24),arr(25),arr(26),arr(27),arr(28),arr(29),arr(30),arr(31),arr(32))
-      }.repartition(100)
-      println("=======================================二度关联总记录数：")
+      }.repartition(10)
+      //println("=======================================二度关联总记录数：")
 
       //映射字段类型
       val schema = StructType(
