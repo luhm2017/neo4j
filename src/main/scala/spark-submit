@@ -14,7 +14,7 @@
 ##导数程序配置
 ###===========================================================
 执行neo4j导入程序
-nohup java -jar neo4j-1.0-SNAPSOT.jar /home/neo4j/ >temp.log &
+nohup java -jar neo4j-1.0-SNAPSHOT.jar /home/neo4j/ >temp.log &
 ##neo4j密码  1qaz2wsx
 
 
@@ -25,7 +25,7 @@ neo4j常见sql操作命令
 
 --添加驱动包
 cd /opt/cloudera/parcels/CDH-5.14.2-1.cdh5.14.2.p0.3/lib/spark/bin
-./spark-shell --master local[1]  --queue root.users.root --driver-memory 2G --executor-memory 80G --num-executors 2 --executor-cores 40 --jars /bigdata/mysql-connector-java-5.1.46.jar /bigdata/neo4j-java-driver-1.4.5.jar /bigdata/neo4j-jdbc-driver-3.1.0.jar --driver-class-path /bigdata/mysql-connector-java-5.1.46.jar /bigdata/neo4j-java-driver-1.4.5.jar /bigdata/neo4j-jdbc-driver-3.1.0.jar
+./spark-shell --master yarn-client  --queue root.users.root --driver-memory 2G --executor-memory 80G --num-executors 3 --executor-cores 40 --jars /bigdata/mysql-connector-java-5.1.46.jar /bigdata/neo4j-java-driver-1.4.5.jar /bigdata/neo4j-jdbc-driver-3.1.0.jar --driver-class-path /bigdata/mysql-connector-java-5.1.46.jar /bigdata/neo4j-java-driver-1.4.5.jar /bigdata/neo4j-jdbc-driver-3.1.0.jar
 
 --导出数据Jar
 nohup ./spark-submit --master yarn-client \
