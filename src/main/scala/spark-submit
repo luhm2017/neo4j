@@ -18,7 +18,7 @@ nohup java -jar neo4j-1.0-SNAPSHOT.jar /home/neo4j/ >temp.log &
 ##neo4j密码  1qaz2wsx
 
 
-
+yarn application -kill application_1528853614500_0007
 ###===========================================================
 neo4j常见sql操作命令
 ###===========================================================
