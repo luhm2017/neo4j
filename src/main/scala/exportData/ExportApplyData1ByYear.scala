@@ -3,12 +3,13 @@ package exportData
 import java.io.Serializable
 import java.sql.{Connection, DriverManager, Statement}
 import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.util.{Calendar, Properties}
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.{SparkConf, SparkContext}
+import utils.DBConnectionPool
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -86,8 +87,11 @@ object ExportApplyData1ByYear extends Serializable{
 
         val rddResult = sqlDF.map{
           row =>
-              val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
-              val stmt: Statement = con.createStatement
+              /*val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
+              val stmt: Statement = con.createStatement*/
+              //使用连接池的方式
+              val con:Connection = DBConnectionPool.getConn()
+              val stmt:Statement = con.createStatement()
               stmt.setQueryTimeout(120)
               val rs = stmt.executeQuery(row)
               val buff = new ArrayBuffer[String]()
@@ -157,5 +161,13 @@ object ExportApplyData1ByYear extends Serializable{
         }
       }
 
+    }
+
+    //获取配置文件信息
+    def getProperties(): Properties ={
+      val props = new Properties()
+      val in=this.getClass.getClassLoader.getResourceAsStream("dbconfig.properties")
+      props.load(in)
+      props
     }
 }
