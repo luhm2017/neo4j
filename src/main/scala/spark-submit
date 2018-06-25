@@ -30,13 +30,13 @@ cd /opt/cloudera/parcels/CDH-5.14.2-1.cdh5.14.2.p0.3/lib/spark/bin
 --按时间内部循环导出
 --导出数据Jar
 nohup ./spark-submit --master yarn-client \
- --deploy-mode client \
+--deploy-mode client \
 --conf spark.locality.wait=1 --conf spark.driver.memory=2g \
 --conf spark.executor.cores=40 --total-executor-cores 120 --num-executors 3 --executor-memory 80g \
 --jars /usr/share/java/mysql-connector-java-5.1.46.jar \
 --driver-class-path /usr/share/java/mysql-connector-java-5.1.46.jar \
 --class exportData.ExportApplyData1ByYear \
-/bigdata/neo4j-1.0-SNAPSHOT.jar fqz fqz_apply_contract_data_day 2016-09-28 2016-09-30 > temp1.log  &
+/bigdata/neo4j-1.0-SNAPSHOT.jar fqz fqz_apply_contract_data_day 2016-06-01 2016-06-30 > temp1.log  &
 
 nohup ./spark-submit --master yarn-client \
  --deploy-mode client \

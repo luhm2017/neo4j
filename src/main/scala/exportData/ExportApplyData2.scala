@@ -52,7 +52,7 @@ object ExportApplyData2 {
         pr =>
           val orderId = pr.getString(0)
           "match (n:Apply {contentKey:'"+orderId+"'})-[r:"+relations+"]-(p)-[r1:"+relations+"]-(m:Apply)-[r2:"+relations+"]-(p2)-[r3:"+relations+"]-(m2:Apply)  " +
-            "where n.applyDate > m.applyDate and m.applyDate > m2.applyDate and n.contentKey <> m2.contentKey and n.cert_no_src <> m2.cert_no_dst2 " +
+            "where n.applyDate > m.applyDate and m.applyDate > m2.applyDate and n.contentKey <> m2.contentKey and n.cert_no <> m2.cert_no " +
             ("return n.contentKey,n.applyDate,n.applyLastState,n.applyState,n.currentDueDay,n.historyDueDay,n.failReason,n.performance,n.cert_no," +
               "type(r) as r,p.contentKey,type(r1) as r1," +
               "m.contentKey,m.applyDate,m.applyLastState,m.applyState,m.currentDueDay,m.historyDueDay,m.failReason,m.performance,m.cert_no," +
