@@ -8,6 +8,7 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.{SparkConf, SparkContext}
+import utils.DBConnectionPool
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -83,8 +84,13 @@ object ExportApplyData2ByYear {
         //sqlDF.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/sql2/")
         val rddResult = sqlDF.map{
           row =>
-            val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
-            val stmt: Statement = con.createStatement
+            /*val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
+            val stmt: Statement = con.createStatement*/
+            //使用连接池的方式
+            println("=================getConn===================================================")
+            val con:Connection = DBConnectionPool.getConn
+            println("=================createStatement===================================================")
+            val stmt:Statement = con.createStatement
             stmt.setQueryTimeout(120)
             val rs = stmt.executeQuery(row)
             val buff = new ArrayBuffer[String]()
@@ -96,8 +102,9 @@ object ExportApplyData2ByYear {
                 s"${rs.getString("m2.contentKey")},${rs.getString("m2.applyDate")},${rs.getString("m2.applyLastState")},${rs.getString("m2.applyState")},${rs.getString("m2.currentDueDay")},${rs.getString("m2.historyDueDay")},${rs.getString("m2.failReason")},${rs.getString("m2.performance")},${rs.getString("m2.cert_no")}"
             }
             //每次连接释放，如果conn放在外面，会报错 Task not serializable
-            stmt.close()
-            con.close()
+            /*stmt.close()
+            con.close()*/
+            DBConnectionPool.releaseCon(con)
             buff.toList
         }/*.repartition(300)*/
         println("========================runQueryApplyByApplyLevel1 end===============================")
@@ -164,7 +171,7 @@ object ExportApplyData2ByYear {
           s"apply_state_dst2,current_due_day_dst2,history_due_day_dst2,fail_reason_dst2,performance_dst2,cert_no_dst2 " +
           s"from temp_degree2")
         //df.write.mode(SaveMode.Overwrite).saveAsTable("fqz.temp_degree1")
-        sc.stop()
+        //sc.stop()
       }catch {
         case e: Exception => {
           println("main exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString)

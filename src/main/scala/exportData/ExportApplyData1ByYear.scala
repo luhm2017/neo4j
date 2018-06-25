@@ -13,6 +13,10 @@ import utils.DBConnectionPool
 
 import scala.collection.mutable.ArrayBuffer
 
+/**
+  * 1、增加jdbc连接池控制
+  * 2、输入开始结束日期，按天分区遍历导出
+  * */
 object ExportApplyData1ByYear extends Serializable{
 
     /**
@@ -59,7 +63,7 @@ object ExportApplyData1ByYear extends Serializable{
             month = "0".concat(month)
           if (day.length == 1 )
             day = "0".concat(day)
-          println("================  year ：" + year +", month :"+ month +", day"+ day)
+          println("================  year ：" + year +", month :"+ month +", day :"+ day)
           println("================exportLevel1Data start ========")
           exportLevel1Data(sc,hc,database,table,year,month,day)
           cal.add(Calendar.DATE,1)
@@ -67,10 +71,10 @@ object ExportApplyData1ByYear extends Serializable{
       }
     }
 
+    //导出一度关联数据
     def exportLevel1Data(sc:SparkContext,hc:HiveContext,database:String,table:String,year:String,month:String,day:String) : Unit={
       //关联关系
       val relations = "IDCARD|BANKCARD|MYPHONE|CONTACT|EMERGENCY|COMPANYPHONE|EMAIL|DEVICE"
-
       try{
         //按月分区跑数
         val sqlDF = hc.sql(s"SELECT order_id FROM $database.$table where year = $year and month = $month and day = $day ").map{
@@ -86,14 +90,13 @@ object ExportApplyData1ByYear extends Serializable{
 
         val rddResult = sqlDF.map{
           row =>
-              val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
-              val stmt: Statement = con.createStatement
+              /*val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
+              val stmt: Statement = con.createStatement*/
               //使用连接池的方式
-              /*println("=================getConn===================================================")
+              println("=================getConn===================================================")
               val con:Connection = DBConnectionPool.getConn
               println("=================createStatement===================================================")
               val stmt:Statement = con.createStatement
-              println("===========================")*/
               stmt.setQueryTimeout(120)
               val rs = stmt.executeQuery(row)
               val buff = new ArrayBuffer[String]()
@@ -104,9 +107,9 @@ object ExportApplyData1ByYear extends Serializable{
                   s"${rs.getString("m.applyLastState")},${rs.getString("m.applyState")},${rs.getString("m.currentDueDay")},${rs.getString("m.historyDueDay")},${rs.getString("m.failReason")},${rs.getString("m.performance")},${rs.getString("m.cert_no")}"
               }
               //每次连接释放，如果conn放在外面，会报错 Task not serializable
-              stmt.close()
-              con.close()
-              //DBConnectionPool.releaseCon(con)
+              /*stmt.close()
+              con.close()*/
+              DBConnectionPool.releaseCon(con)
               buff.toList
         }/*.repartition(300)*/
         println("========================runQueryApplyByApplyLevel1 end===============================")
@@ -157,7 +160,7 @@ object ExportApplyData1ByYear extends Serializable{
           s"cert_no_src,edg_type_src1,contact_value1,edg_type_dst1,order_id_dst1,apply_date_dst1,apply_last_state_dst1," +
           s"apply_state_dst1,current_due_day_dst1,history_due_day_dst1,fail_reason_dst1,performance_dst1,cert_no_dst1 from temp_degree1")
         //df.write.mode(SaveMode.Overwrite).saveAsTable("fqz.temp_degree1")
-        sc.stop()
+        //sc.stop()
       }catch {
         case e: Exception => {
           println("main exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString)
