@@ -12,6 +12,10 @@ import utils.DBConnectionPool
 
 import scala.collection.mutable.ArrayBuffer
 
+/**
+  * 1、增加jdbc连接池控制
+  * 2、输入开始结束日期，按天分区遍历导出
+  * */
 object ExportApplyData2ByYear {
 
   /**
