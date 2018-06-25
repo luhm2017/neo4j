@@ -72,13 +72,13 @@ object ExportApplyData2ByYear {
           pr =>
             val orderId = pr.getString(0)
             "match (n:Apply {contentKey:'"+orderId+"'})-[r:"+relations+"]-(p)-[r1:"+relations+"]-(m:Apply)-[r2:"+relations+"]-(p2)-[r3:"+relations+"]-(m2:Apply)  " +
-              "where n.applyDate > m.applyDate and m.applyDate > m2.applyDate and n.contentKey <> m2.contentKey " +
+              "where n.applyDate > m.applyDate and m.applyDate > m2.applyDate and n.contentKey <> m2.contentKey and n.cert_no_src <> m2.cert_no_dst2 " +
               ("return n.contentKey,n.applyDate,n.applyLastState,n.applyState,n.currentDueDay,n.historyDueDay,n.failReason,n.performance,n.cert_no," +
                 "type(r) as r,p.contentKey,type(r1) as r1," +
                 "m.contentKey,m.applyDate,m.applyLastState,m.applyState,m.currentDueDay,m.historyDueDay,m.failReason,m.performance,m.cert_no," +
                 "type(r2) as r2, p2.contentKey,type(r3) as r3," +
                 "m2.contentKey,m2.applyDate,m2.applyLastState,m2.applyState,m2.currentDueDay,m2.historyDueDay,m2.failReason,m2.performance,m2.cert_no  limit 100000").toString
-        }
+        }.repartition(10)
         println("================runQueryApplyByApplyLevel2 start ========")
         //sqlDF.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/sql2/")
         val rddResult = sqlDF.map{

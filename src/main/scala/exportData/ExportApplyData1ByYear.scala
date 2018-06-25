@@ -82,16 +82,18 @@ object ExportApplyData1ByYear extends Serializable{
                 " m.historyDueDay,m.failReason,m.performance,m.cert_no  limit 100000").toString
         }.repartition(10)  //缩小partition
         println("================runQueryApplyByApplyLevel1 start ========")
-        sqlDF.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/sql/")
-        //调整连接串位置
+        //sqlDF.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/sql/")
 
         val rddResult = sqlDF.map{
           row =>
-              /*val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
-              val stmt: Statement = con.createStatement*/
+              val con: Connection = DriverManager.getConnection("jdbc:neo4j:bolt:10.10.206.35:7687", "neo4j", "1qaz2wsx")
+              val stmt: Statement = con.createStatement
               //使用连接池的方式
-              val con:Connection = DBConnectionPool.getConn()
-              val stmt:Statement = con.createStatement()
+              /*println("=================getConn===================================================")
+              val con:Connection = DBConnectionPool.getConn
+              println("=================createStatement===================================================")
+              val stmt:Statement = con.createStatement
+              println("===========================")*/
               stmt.setQueryTimeout(120)
               val rs = stmt.executeQuery(row)
               val buff = new ArrayBuffer[String]()
@@ -104,12 +106,13 @@ object ExportApplyData1ByYear extends Serializable{
               //每次连接释放，如果conn放在外面，会报错 Task not serializable
               stmt.close()
               con.close()
+              //DBConnectionPool.releaseCon(con)
               buff.toList
         }/*.repartition(300)*/
         println("========================runQueryApplyByApplyLevel1 end===============================")
         //println("======================== 一度关联的订单总数： "+ rddResult.count())
         println("========================组装一度关联结果===============================" )
-        rddResult.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/spark/")
+        //rddResult.saveAsTextFile("hdfs://zhengcemoxing.lkl.com:8020/user/luhuamin/spark/")
         //过滤rddResult中List()的情况
         val degree1 = rddResult.flatMap(k => k).distinct()
           .map { v =>
@@ -163,11 +166,4 @@ object ExportApplyData1ByYear extends Serializable{
 
     }
 
-    //获取配置文件信息
-    def getProperties(): Properties ={
-      val props = new Properties()
-      val in=this.getClass.getClassLoader.getResourceAsStream("dbconfig.properties")
-      props.load(in)
-      props
-    }
 }
