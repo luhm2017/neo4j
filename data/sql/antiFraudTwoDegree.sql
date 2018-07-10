@@ -10,6 +10,7 @@ a.cert_no_dst2
 FROM fqz.fqz_relation_degree2  a 
 join temp_contract_data b on a.order_id_src = b.order_id
 where edg_type_src1 = '$edge1' and edg_type_src2 = '$edge2'
+--and a.cert_no_src <> a.cert_no_dst2
 GROUP BY 
 a.order_id_src,
 apply_date_src,
@@ -21,9 +22,9 @@ a.cert_no_dst2;
 --添加源订单，根据时间范围扩展
 create table temp_degree2_relation_data_src_$edge1_$edge2 as 
 select  
-tab.order_id_src,tab.apply_date_src,tab.cert_no_src
+tab.order_id_src,tab.apply_date_src,tab.cert_no_src,
 tab.order_id_src as order_id_dst2,tab.apply_date_src as apply_date_dst2, tab.cert_no_src as cert_no_dst2  from 
-(select a.order_id_src,a.apply_date_src,a.cert_no_src from temp_degree2_relation_data_$edge1_$edge2 a group by a.order_id_src,a.apply_date_src) tab
+(select a.order_id_src,a.apply_date_src,a.cert_no_src from temp_degree2_relation_data_$edge1_$edge2 a group by a.order_id_src,a.apply_date_src,a.cert_no_src) tab
 union all 
 select a.order_id_src,a.apply_date_src,a.cert_no_src,a.order_id_dst2,a.apply_date_dst2,a.cert_no_dst2
 from temp_degree2_relation_data_$edge1_$edge2 a;
@@ -82,7 +83,7 @@ select a.order_id_src, sum(a.history_overdue0_dst2) cnt group by a.order_id_src
 INSERT INTO degree2_features partition (title='history_overdue3_contract_cnt_$edge1_$edge2')   --二度含自身历史3+合同数量
 select a.order_id_src, sum(a.history_overdue3_dst2) cnt group by a.order_id_src
 INSERT INTO degree2_features partition (title='history_overdue30_contract_cnt_$edge1_$edge2')  --二度含自身历史30+合同数量
-select a.order_id_src, sum(a.history_overdue30_dst2) cnt group by a.order_id_src
+select a.order_id_src, sum(a.history_overdue30_dst2) cnt group by a.order_id_src;
 
 --关联边指标，区别于订单合同表现指标（包含原始订单）
 FROM (select * from temp_degree2_relation_data_attribute_$edge1_$edge2) a
@@ -108,7 +109,7 @@ select a.order_id_src, count(distinct a.product_name_dst2) cnt group by a.order_
 INSERT INTO degree2_features partition (title='yfq_cnt_$edge1_$edge2')  --二度含自身yfq数量
 select a.order_id_src, sum(a.yfq_dst2) cnt group by a.order_id_src 
 INSERT INTO degree2_features partition (title='tnh_cnt_$edge1_$edge2')  --二度含自身tnh数量
-select a.order_id_src, sum(a.tnh_dst2) cnt group by a.order_id_src  
+select a.order_id_src, sum(a.tnh_dst2) cnt group by a.order_id_src  ;
 
 --关联边小图指标，按时间1\3\7\30切片
 --===================================================================================================

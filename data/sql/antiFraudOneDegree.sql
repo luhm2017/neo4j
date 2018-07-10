@@ -21,9 +21,9 @@ a.cert_no_dst1;
 --添加源订单，根据时间范围扩展
 create table temp_degree1_relation_data_src_$edge as 
 select  
-tab.order_id_src,tab.apply_date_src,tab.cert_no_src
+tab.order_id_src,tab.apply_date_src,tab.cert_no_src,
 tab.order_id_src as order_id_dst1,tab.apply_date_src as apply_date_dst1, tab.cert_no_src as cert_no_dst1  from 
-(select a.order_id_src,a.apply_date_src,a.cert_no_src from temp_degree1_relation_data_$edge a group by a.order_id_src,a.apply_date_src) tab
+(select a.order_id_src,a.apply_date_src,a.cert_no_src from temp_degree1_relation_data_$edge a group by a.order_id_src,a.apply_date_src,a.cert_no_src) tab
 union all 
 select a.order_id_src,a.apply_date_src,a.cert_no_src,a.order_id_dst1,a.apply_date_dst1,a.cert_no_dst1
 from temp_degree1_relation_data_$edge a;
