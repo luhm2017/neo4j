@@ -1,5 +1,6 @@
+use knowledge_graph;
+
 --根据二度取关联数据，增加时间日期 , 通配符统一替换关联边
---
 create table temp_degree2_relation_data_$edge1_$edge2 as 
 SELECT a.order_id_src,
 a.apply_date_src ,
@@ -9,7 +10,7 @@ a.apply_date_dst2,
 a.cert_no_dst2
 FROM fqz.fqz_relation_degree2  a 
 join temp_contract_data b on a.order_id_src = b.order_id
-where edg_type_src1 = '$edge1' and edg_type_src2 = '$edge2'
+where edg_type_src1 = '$Bedge1' and edg_type_src2 = '$Bedge2'
 --and a.cert_no_src <> a.cert_no_dst2
 GROUP BY 
 a.order_id_src,
@@ -102,7 +103,7 @@ select a.order_id_src, count(distinct a.contact_mobile_dst2) cnt group by a.orde
 INSERT INTO degree2_features partition (title='emergency_mobile_cnt_$edge1_$edge2')  --二度含自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst2) cnt group by a.order_id_src
 INSERT INTO degree2_features partition (title='company_phone_cnt_$edge1_$edge2')  --二度含自身单电数量
-select a.order_id_src, count(distinct a.comp_phone_dst2) cnt group by a.order_id_src 
+select a.order_id_src, count(distinct a.comp_phone_dst2) cnt group by a.order_id_src ;
 --申请产品指标
 INSERT INTO degree2_features partition (title='product_cnt_$edge1_$edge2')  --二度含自身总产品数
 select a.order_id_src, count(distinct a.product_name_dst2) cnt group by a.order_id_src 

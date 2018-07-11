@@ -1,3 +1,5 @@
+use knowledge_graph;
+
 --根据一度取关联数据，增加时间日期 , 通配符统一替换关联边
 --BANKCARD、COMPANYPHONE、CONTACT、DEVICE、EMAIL、EMERGENCY、IDCARD、MYPHONE
 create table temp_degree1_relation_data_$edge as 
@@ -9,7 +11,7 @@ a.apply_date_dst1,
 a.cert_no_dst1
 FROM fqz.fqz_relation_degree1  a 
 join temp_contract_data b on a.order_id_src = b.order_id
-where edg_type_src1 = '$edge'
+where edg_type_src1 = '$Bedge'
 GROUP BY 
 a.order_id_src,
 apply_date_src ,
@@ -82,7 +84,7 @@ select a.order_id_src, sum(a.history_overdue0_dst1) cnt group by a.order_id_src
 INSERT INTO degree1_features partition (title='history_overdue3_contract_cnt_$edge')   --一度含自身历史3+合同数量
 select a.order_id_src, sum(a.history_overdue3_dst1) cnt group by a.order_id_src
 INSERT INTO degree1_features partition (title='history_overdue30_contract_cnt_$edge')  --一度含自身历史30+合同数量
-select a.order_id_src, sum(a.history_overdue30_dst1) cnt group by a.order_id_src
+select a.order_id_src, sum(a.history_overdue30_dst1) cnt group by a.order_id_src;
 
 --关联边指标，区别于订单合同表现指标（包含原始订单）
 FROM (select * from temp_degree1_relation_data_attribute_$edge) a
@@ -108,7 +110,7 @@ select a.order_id_src, count(distinct a.product_name_dst1) cnt group by a.order_
 INSERT INTO degree1_features partition (title='yfq_cnt_$edge')  --一度含自身yfq数量
 select a.order_id_src, sum(a.yfq_dst1) cnt group by a.order_id_src 
 INSERT INTO degree1_features partition (title='tnh_cnt_$edge')  --一度含自身tnh数量
-select a.order_id_src, sum(a.tnh_dst1) cnt group by a.order_id_src  
+select a.order_id_src, sum(a.tnh_dst1) cnt group by a.order_id_src  ;
 
 --关联边小图指标，按时间1\3\7\30切片
 --===================================================================================================
@@ -235,7 +237,7 @@ select a.order_id_src, sum(a.history_overdue0_dst1) cnt group by a.order_id_src
 INSERT INTO degree1_features partition (title='history_overdue3_contract_cnt_exception_self_$edge')   --一度排除自身历史3+合同数量
 select a.order_id_src, sum(a.history_overdue3_dst1) cnt group by a.order_id_src
 INSERT INTO degree1_features partition (title='history_overdue30_contract_cnt_exception_self_$edge')  --一度排除自身历史30+合同数量
-select a.order_id_src, sum(a.history_overdue30_dst1) cnt group by a.order_id_src
+select a.order_id_src, sum(a.history_overdue30_dst1) cnt group by a.order_id_src;
 
 --关联边指标，区别于订单合同表现指标（包含原始订单）
 FROM (select * from temp_degree1_relation_data_attribute where and cert_no_src <> cert_no_dst1) a
@@ -254,14 +256,14 @@ select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.orde
 INSERT INTO degree1_features partition (title='emergency_mobile_cnt_exception_self_$edge')  --一度排除自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
 INSERT INTO degree1_features partition (title='company_phone_cnt_exception_self_$edge')  --一度排除自身单电数量
-select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src 
+select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src ;
 --申请产品指标
 INSERT INTO degree1_features partition (title='product_cnt_exception_self_$edge')  --一度排除自身总产品数
 select a.order_id_src, count(distinct a.product_name_dst1) cnt group by a.order_id_src 
 INSERT INTO degree1_features partition (title='yfq_cnt_exception_self_$edge')  --一度排除自身yfq数量
 select a.order_id_src, sum(a.yfq_dst1) cnt group by a.order_id_src 
 INSERT INTO degree1_features partition (title='tnh_cnt_exception_self_$edge')  --一度排除自身tnh数量
-select a.order_id_src, sum(a.tnh_dst1) cnt group by a.order_id_src  
+select a.order_id_src, sum(a.tnh_dst1) cnt group by a.order_id_src  ;
 
 --关联边小图指标，按时间1\3\7\30切片
 --===================================================================================================
