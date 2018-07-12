@@ -67,151 +67,151 @@ join fqz.fqz_knowledge_graph_data_external b on a.order_id_dst1 = b.order_id;
 --================================================================================================
 --订单合同表现指标
 FROM (select * from temp_degree1_relation_data_attribute_$edge where order_id_src <> order_id_dst1 ) a
-INSERT INTO degree1_features partition (title='order_cnt_$edge')  --一度含自身订单数量，
+INSERT OVERWRITE TABLE degree1_features partition (title='order_cnt_$edge')  --一度含自身订单数量，
 SELECT a.order_id_src, count(distinct a.order_id_dst1) cnt group by  a.order_id_src 
-INSERT INTO degree1_features partition (title='pass_contract_cnt_$edge')   --一度含自身通过合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='pass_contract_cnt_$edge')   --一度含自身通过合同数量
 SELECT a.order_id_src, sum(a.pass_contract_dst1) cnt  group by  a.order_id_src
-INSERT INTO degree1_features partition (title='q_order_cnt_$edge')   --一度含自身Q标订单数量
+INSERT OVERWRITE TABLE degree1_features partition (title='q_order_cnt_$edge')   --一度含自身Q标订单数量
 SELECT a.order_id_src, sum(a.q_refuse_dst1) cnt group by  a.order_id_src
-INSERT INTO degree1_features partition (title='current_overdue0_contract_cnt_$edge')   --一度含自身当前无逾期合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='current_overdue0_contract_cnt_$edge')   --一度含自身当前无逾期合同数量
 select a.order_id_src, sum(a.current_overdue0_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='current_overdue3_contract_cnt_$edge')   --一度含自身当前3+合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='current_overdue3_contract_cnt_$edge')   --一度含自身当前3+合同数量
 select a.order_id_src, sum(a.current_overdue3_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='current_overdue30_contract_cnt_$edge')   --一度含自身当前30+合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='current_overdue30_contract_cnt_$edge')   --一度含自身当前30+合同数量
 select a.order_id_src, sum(a.current_overdue30_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='history_overdue0_contract_cnt_$edge')   --一度含自身历史无逾期合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='history_overdue0_contract_cnt_$edge')   --一度含自身历史无逾期合同数量
 select a.order_id_src, sum(a.history_overdue0_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='history_overdue3_contract_cnt_$edge')   --一度含自身历史3+合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='history_overdue3_contract_cnt_$edge')   --一度含自身历史3+合同数量
 select a.order_id_src, sum(a.history_overdue3_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='history_overdue30_contract_cnt_$edge')  --一度含自身历史30+合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='history_overdue30_contract_cnt_$edge')  --一度含自身历史30+合同数量
 select a.order_id_src, sum(a.history_overdue30_dst1) cnt group by a.order_id_src;
 
 --关联边指标，区别于订单合同表现指标（包含原始订单）
 FROM (select * from temp_degree1_relation_data_attribute_$edge) a
-INSERT INTO degree1_features partition (title='cid_cnt_$edge')   --一度含自身身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt_$edge')   --一度含自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt  group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt_$edge')  --一度含自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt_$edge')  --一度含自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt_$edge')  --一度含自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt_$edge')  --一度含自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt_$edge')  --一度含自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt_$edge')  --一度含自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt_$edge')  --一度含自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt_$edge')  --一度含自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt_$edge')  --一度含自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt_$edge')  --一度含自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt_$edge')  --一度含自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt_$edge')  --一度含自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt_$edge')  --一度含自身单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt_$edge')  --一度含自身单电数量
 select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src 
 --申请产品指标
-INSERT INTO degree1_features partition (title='product_cnt_$edge')  --一度含自身总产品数
+INSERT OVERWRITE TABLE degree1_features partition (title='product_cnt_$edge')  --一度含自身总产品数
 select a.order_id_src, count(distinct a.product_name_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='yfq_cnt_$edge')  --一度含自身yfq数量
+INSERT OVERWRITE TABLE degree1_features partition (title='yfq_cnt_$edge')  --一度含自身yfq数量
 select a.order_id_src, sum(a.yfq_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='tnh_cnt_$edge')  --一度含自身tnh数量
+INSERT OVERWRITE TABLE degree1_features partition (title='tnh_cnt_$edge')  --一度含自身tnh数量
 select a.order_id_src, sum(a.tnh_dst1) cnt group by a.order_id_src  ;
 
 --关联边小图指标，按时间1\3\7\30切片
 --===================================================================================================
 FROM (select * from temp_degree1_relation_data_attribute_$edge where datediff(apply_date_src,apply_date_dst1) <= 1) a
-INSERT INTO degree1_features partition (title='cid_cnt1_$edge')   --一度含自身身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt1_$edge')   --一度含自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt1_$edge')  --一度含自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt1_$edge')  --一度含自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt1_$edge')  --一度含自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt1_$edge')  --一度含自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt1_$edge')  --一度含自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt1_$edge')  --一度含自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt1_$edge')  --一度含自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt1_$edge')  --一度含自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt1_$edge')  --一度含自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt1_$edge')  --一度含自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt1_$edge')  --一度含自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt1_$edge')  --一度含自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt1_$edge')  --一度含自身单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt1_$edge')  --一度含自身单电数量
 select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src;
 
 FROM (select * from temp_degree1_relation_data_attribute_$edge where datediff(apply_date_src,apply_date_dst1) <= 3) a
-INSERT INTO degree1_features partition (title='cid_cnt3_$edge')   --一度含自身身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt3_$edge')   --一度含自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt3_$edge')  --一度含自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt3_$edge')  --一度含自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt3_$edge')  --一度含自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt3_$edge')  --一度含自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt3_$edge')  --一度含自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt3_$edge')  --一度含自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt3_$edge')  --一度含自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt3_$edge')  --一度含自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt3_$edge')  --一度含自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt3_$edge')  --一度含自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt3_$edge')  --一度含自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt3_$edge')  --一度含自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt3_$edge')  --一度含自身单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt3_$edge')  --一度含自身单电数量
 select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src;
 
 FROM (select * from temp_degree1_relation_data_attribute_$edge where datediff(apply_date_src,apply_date_dst1) <= 7) a
-INSERT INTO degree1_features partition (title='cid_cnt7_$edge')   --一度含自身身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt7_$edge')   --一度含自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt  group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt7_$edge')  --一度含自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt7_$edge')  --一度含自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt7_$edge')  --一度含自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt7_$edge')  --一度含自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt7_$edge')  --一度含自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt7_$edge')  --一度含自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt7_$edge')  --一度含自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt7_$edge')  --一度含自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt7_$edge')  --一度含自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt7_$edge')  --一度含自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt7_$edge')  --一度含自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt7_$edge')  --一度含自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt7_$edge')  --一度含自身单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt7_$edge')  --一度含自身单电数量
 select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src;
 
 FROM (select * from temp_degree1_relation_data_attribute_$edge where datediff(apply_date_src,apply_date_dst1) <= 30) a
-INSERT INTO degree1_features partition (title='cid_cnt30_$edge')   --一度含自身身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt30_$edge')   --一度含自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt30_$edge')  --一度含自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt30_$edge')  --一度含自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt30_$edge')  --一度含自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt30_$edge')  --一度含自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt30_$edge')  --一度含自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt30_$edge')  --一度含自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt30_$edge')  --一度含自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt30_$edge')  --一度含自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt30_$edge')  --一度含自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt30_$edge')  --一度含自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt30_$edge')  --一度含自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt30_$edge')  --一度含自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt30_$edge')  --一度含自身单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt30_$edge')  --一度含自身单电数量
 select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src;
 
 --关联边命中黑指标
-INSERT INTO degree1_features partition (title='black_cid_cnt_$edge')   --一度含自身黑身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_cid_cnt_$edge')   --一度含自身黑身份证数量
 select a.order_id_src,count(distinct a.cert_no_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.cert_no_dst1 = b.CONTENT
 where  b.type = 'black_cid' group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_mobile_cnt_$edge')   --一度含自身黑手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_mobile_cnt_$edge')   --一度含自身黑手机数量
 select a.order_id_src,count(distinct a.mobile_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.mobile_dst1 = b.CONTENT
 where  b.type = 'black_mobile' group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_bankcard_cnt_$edge')   --一度含自身黑银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_bankcard_cnt_$edge')   --一度含自身黑银行卡数量
 select a.order_id_src,count(distinct a.loan_pan_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.loan_pan_dst1 = b.CONTENT
 where  b.type = 'black_bankcard' group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_imei_cnt_$edge')   --一度含自身黑IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_imei_cnt_$edge')   --一度含自身黑IMEI数量
 select a.order_id_src,count(distinct a.device_id_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.device_id_dst1 = b.CONTENT
 where  b.type = 'black_imei' group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_email_cnt_$edge')   --一度含自身黑Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_email_cnt_$edge')   --一度含自身黑Email数量
 select a.order_id_src,count(distinct a.email_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.email_dst1 = b.CONTENT
 where  b.type = 'black_email'  group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_company_phone_cnt_$edge')   --一度含自身黑单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_company_phone_cnt_$edge')   --一度含自身黑单电数量
 select a.order_id_src,count(distinct a.comp_phone_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.comp_phone_dst1 = b.CONTENT
 where  b.type =  'black_company_phone' group by a.order_id_src; --单电是否正则化处理  
-INSERT INTO degree1_features partition (title='black_contract_cnt_$edge')   --一度含自身黑合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_contract_cnt_$edge')   --一度含自身黑合同数量
 select a.order_id_src,count(distinct a.order_id_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.order_id_dst1 = b.CONTENT
 where b.type = 'black_contract' group by a.order_id_src;
@@ -220,133 +220,133 @@ where b.type = 'black_contract' group by a.order_id_src;
 --==========================================================================================================================
 --排除自身的指标
 FROM (select * from temp_degree1_relation_data_attribute where order_id_src <> order_id_dst1 and cert_no_src <> cert_no_dst1) a
-INSERT INTO degree1_features partition (title='order_cnt_exception_self_$edge')  --一度排除自身订单数量，
+INSERT OVERWRITE TABLE degree1_features partition (title='order_cnt_exception_self_$edge')  --一度排除自身订单数量，
 SELECT a.order_id_src, count(distinct a.order_id_dst1) cnt group by  a.order_id_src 
-INSERT INTO degree1_features partition (title='pass_contract_cnt_exception_self_$edge')   --一度排除自身通过合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='pass_contract_cnt_exception_self_$edge')   --一度排除自身通过合同数量
 SELECT a.order_id_src, sum(a.pass_contract_dst1) cnt  group by  a.order_id_src
-INSERT INTO degree1_features partition (title='q_order_cnt_exception_self_$edge')   --一度排除自身Q标订单数量
+INSERT OVERWRITE TABLE degree1_features partition (title='q_order_cnt_exception_self_$edge')   --一度排除自身Q标订单数量
 SELECT a.order_id_src, sum(a.q_refuse_dst1) cnt group by  a.order_id_src
-INSERT INTO degree1_features partition (title='current_overdue0_contract_cnt_exception_self_$edge')   --一度排除自身当前无逾期合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='current_overdue0_contract_cnt_exception_self_$edge')   --一度排除自身当前无逾期合同数量
 select a.order_id_src, sum(a.current_overdue0_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='current_overdue3_contract_cnt_exception_self_$edge')   --一度排除自身当前3+合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='current_overdue3_contract_cnt_exception_self_$edge')   --一度排除自身当前3+合同数量
 select a.order_id_src, sum(a.current_overdue3_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='current_overdue30_contract_cnt_exception_self_$edge')   --一度排除自身当前30+合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='current_overdue30_contract_cnt_exception_self_$edge')   --一度排除自身当前30+合同数量
 select a.order_id_src, sum(a.current_overdue30_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='history_overdue0_contract_cnt_exception_self_$edge')   --一度排除自身历史无逾期合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='history_overdue0_contract_cnt_exception_self_$edge')   --一度排除自身历史无逾期合同数量
 select a.order_id_src, sum(a.history_overdue0_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='history_overdue3_contract_cnt_exception_self_$edge')   --一度排除自身历史3+合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='history_overdue3_contract_cnt_exception_self_$edge')   --一度排除自身历史3+合同数量
 select a.order_id_src, sum(a.history_overdue3_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='history_overdue30_contract_cnt_exception_self_$edge')  --一度排除自身历史30+合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='history_overdue30_contract_cnt_exception_self_$edge')  --一度排除自身历史30+合同数量
 select a.order_id_src, sum(a.history_overdue30_dst1) cnt group by a.order_id_src;
 
 --关联边指标，区别于订单合同表现指标（包含原始订单）
-FROM (select * from temp_degree1_relation_data_attribute where and cert_no_src <> cert_no_dst1) a
-INSERT INTO degree1_features partition (title='cid_cnt_exception_self_$edge')   --一度排除自身身份证数量
+FROM (select * from temp_degree1_relation_data_attribute where cert_no_src <> cert_no_dst1) a
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt_exception_self_$edge')   --一度排除自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt_exception_self_$edge')  --一度排除自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt_exception_self_$edge')  --一度排除自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt_exception_self_$edge')  --一度排除自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt_exception_self_$edge')  --一度排除自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt_exception_self_$edge')  --一度排除自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt_exception_self_$edge')  --一度排除自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt_exception_self_$edge')  --一度排除自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt_exception_self_$edge')  --一度排除自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt_exception_self_$edge')  --一度排除自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt_exception_self_$edge')  --一度排除自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt_exception_self_$edge')  --一度排除自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt_exception_self_$edge')  --一度排除自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt_exception_self_$edge')  --一度排除自身单电数量
-select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src ;
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt_exception_self_$edge')  --一度排除自身单电数量
+select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src
 --申请产品指标
-INSERT INTO degree1_features partition (title='product_cnt_exception_self_$edge')  --一度排除自身总产品数
+INSERT OVERWRITE TABLE degree1_features partition (title='product_cnt_exception_self_$edge')  --一度排除自身总产品数
 select a.order_id_src, count(distinct a.product_name_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='yfq_cnt_exception_self_$edge')  --一度排除自身yfq数量
+INSERT OVERWRITE TABLE degree1_features partition (title='yfq_cnt_exception_self_$edge')  --一度排除自身yfq数量
 select a.order_id_src, sum(a.yfq_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='tnh_cnt_exception_self_$edge')  --一度排除自身tnh数量
+INSERT OVERWRITE TABLE degree1_features partition (title='tnh_cnt_exception_self_$edge')  --一度排除自身tnh数量
 select a.order_id_src, sum(a.tnh_dst1) cnt group by a.order_id_src  ;
 
 --关联边小图指标，按时间1\3\7\30切片
 --===================================================================================================
 FROM (select * from temp_degree1_relation_data_attribute where datediff(apply_date_src,apply_date_dst1) <= 1 and cert_no_src <> cert_no_dst1) a
-INSERT INTO degree1_features partition (title='cid_cnt1_exception_self_$edge')   --一度排除自身身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt1_exception_self_$edge')   --一度排除自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt1_exception_self_$edge')  --一度排除自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt1_exception_self_$edge')  --一度排除自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt1_exception_self_$edge')  --一度排除自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt1_exception_self_$edge')  --一度排除自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt1_exception_self_$edge')  --一度排除自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt1_exception_self_$edge')  --一度排除自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt1_exception_self_$edge')  --一度排除自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt1_exception_self_$edge')  --一度排除自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt1_exception_self_$edge')  --一度排除自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt1_exception_self_$edge')  --一度排除自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt1_exception_self_$edge')  --一度排除自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt1_exception_self_$edge')  --一度排除自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt1_exception_self_$edge')  --一度排除自身单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt1_exception_self_$edge')  --一度排除自身单电数量
 select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src;
 
 FROM (select * from temp_degree1_relation_data_attribute where datediff(apply_date_src,apply_date_dst1) <= 7 and cert_no_src <> cert_no_dst1) a
-INSERT INTO degree1_features partition (title='cid_cnt7_exception_self_$edge')   --一度排除自身身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt7_exception_self_$edge')   --一度排除自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt  group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt7_exception_self_$edge')  --一度排除自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt7_exception_self_$edge')  --一度排除自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt7_exception_self_$edge')  --一度排除自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt7_exception_self_$edge')  --一度排除自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt7_exception_self_$edge')  --一度排除自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt7_exception_self_$edge')  --一度排除自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt7_exception_self_$edge')  --一度排除自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt7_exception_self_$edge')  --一度排除自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt7_exception_self_$edge')  --一度排除自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt7_exception_self_$edge')  --一度排除自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt7_exception_self_$edge')  --一度排除自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt7_exception_self_$edge')  --一度排除自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt7_exception_self_$edge')  --一度排除自身单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt7_exception_self_$edge')  --一度排除自身单电数量
 select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src;
 
 FROM (select * from temp_degree1_relation_data_attribute where datediff(apply_date_src,apply_date_dst1) <= 30 and cert_no_src <> cert_no_dst1) a
-INSERT INTO degree1_features partition (title='cid_cnt30_exception_self_$edge')   --一度排除自身身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='cid_cnt30_exception_self_$edge')   --一度排除自身身份证数量
 SELECT a.order_id_src, count(distinct a.cert_no_dst1) cnt  group by  a.order_id_src
-INSERT INTO degree1_features partition (title='mobile_cnt30_exception_self_$edge')  --一度排除自身手机号数量
+INSERT OVERWRITE TABLE degree1_features partition (title='mobile_cnt30_exception_self_$edge')  --一度排除自身手机号数量
 select a.order_id_src, count(distinct a.mobile_dst1) cnt group by a.order_id_src 
-INSERT INTO degree1_features partition (title='bankcard_cnt30_exception_self_$edge')  --一度排除自身银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='bankcard_cnt30_exception_self_$edge')  --一度排除自身银行卡数量
 select a.order_id_src, count(distinct a.loan_pan_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='imei_cnt30_exception_self_$edge')  --一度排除自身IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='imei_cnt30_exception_self_$edge')  --一度排除自身IMEI数量
 select a.order_id_src, count(distinct a.device_id_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='email_cnt30_exception_self_$edge')  --一度排除自身Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='email_cnt30_exception_self_$edge')  --一度排除自身Email数量
 select a.order_id_src, count(distinct a.email_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='contact_mobile_cnt30_exception_self_$edge')  --一度排除自身联系人手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='contact_mobile_cnt30_exception_self_$edge')  --一度排除自身联系人手机数量
 select a.order_id_src, count(distinct a.contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='emergency_mobile_cnt30_exception_self_$edge')  --一度排除自身紧联手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='emergency_mobile_cnt30_exception_self_$edge')  --一度排除自身紧联手机数量
 select a.order_id_src, count(distinct a.emergency_contact_mobile_dst1) cnt group by a.order_id_src
-INSERT INTO degree1_features partition (title='company_phone_cnt30_exception_self_$edge')  --一度排除自身单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='company_phone_cnt30_exception_self_$edge')  --一度排除自身单电数量
 select a.order_id_src, count(distinct a.comp_phone_dst1) cnt group by a.order_id_src;
 
 --关联边命中黑指标
-INSERT INTO degree1_features partition (title='black_cid_cnt_exception_self_$edge')   --一度排除自身黑身份证数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_cid_cnt_exception_self_$edge')   --一度排除自身黑身份证数量
 select a.order_id_src,count(distinct a.cert_no_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.cert_no_dst1 = b.CONTENT
 where  b.type = 'black_cid' and a.cert_no_src <> a.cert_no_dst1 group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_mobile_cnt_exception_self_$edge')   --一度排除自身黑手机数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_mobile_cnt_exception_self_$edge')   --一度排除自身黑手机数量
 select a.order_id_src,count(distinct a.mobile_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.mobile_dst1 = b.CONTENT
 where  b.type = 'black_mobile' and a.cert_no_src <> a.cert_no_dst1 group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_bankcard_cnt_exception_self_$edge')   --一度排除自身黑银行卡数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_bankcard_cnt_exception_self_$edge')   --一度排除自身黑银行卡数量
 select a.order_id_src,count(distinct a.loan_pan_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.loan_pan_dst1 = b.CONTENT
 where  b.type = 'black_bankcard' and a.cert_no_src <> a.cert_no_dst1 group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_imei_cnt_exception_self_$edge')   --一度排除自身黑IMEI数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_imei_cnt_exception_self_$edge')   --一度排除自身黑IMEI数量
 select a.order_id_src,count(distinct a.device_id_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.device_id_dst1 = b.CONTENT
 where  b.type = 'black_imei' and a.cert_no_src <> a.cert_no_dst1 group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_email_cnt_exception_self_$edge')   --一度排除自身黑Email数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_email_cnt_exception_self_$edge')   --一度排除自身黑Email数量
 select a.order_id_src,count(distinct a.email_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.email_dst1 = b.CONTENT
 where  b.type = 'black_email' and a.cert_no_src <> a.cert_no_dst1  group by a.order_id_src;
-INSERT INTO degree1_features partition (title='black_company_phone_cnt_exception_self_$edge')   --一度排除自身黑单电数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_company_phone_cnt_exception_self_$edge')   --一度排除自身黑单电数量
 select a.order_id_src,count(distinct a.comp_phone_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.comp_phone_dst1 = b.CONTENT
 where  b.type =  'black_company_phone' and a.cert_no_src <> a.cert_no_dst1 group by a.order_id_src; --单电是否正则化处理  
-INSERT INTO degree1_features partition (title='black_contract_cnt_exception_self_$edge')   --一度排除自身黑合同数量
+INSERT OVERWRITE TABLE degree1_features partition (title='black_contract_cnt_exception_self_$edge')   --一度排除自身黑合同数量
 select a.order_id_src,count(distinct a.order_id_dst1) as cnt from temp_degree1_relation_data_attribute_$edge a 
 join fqz_black_attribute_data b on a.order_id_dst1 = b.CONTENT
 where b.type = 'black_contract' and a.cert_no_src <> a.cert_no_dst1 group by a.order_id_src;
