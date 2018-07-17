@@ -622,8 +622,5 @@ select a.order_id_src,count(distinct a.order_id_dst2) as cnt from temp_degree2_r
 join fqz_black_attribute_data b on a.order_id_dst2 = b.CONTENT
 where b.type = 'black_contract' group by a.order_id_src;
 
---反欺诈共用类变量
---==============================================================================
---先基于全量申请订单，清洗人的数据
-
---基于一度圈构造共用类变量
+--===========================================================
+--合并特征变量
