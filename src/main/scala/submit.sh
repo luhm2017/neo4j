@@ -22,5 +22,19 @@ done
 ##ssh脚本提交任务
 ##=====================================
 #!/bin/sh
-echo "############开始执行脚本####################"
-hive sql > temp.log
+echo "############开始执行脚本bankcard####################"
+hive -f antiFraudOneDegree_bankcard.sql
+echo "############开始执行脚本companyphone####################"
+hive -f antiFraudOneDegree_companyphone.sql
+echo "############开始执行脚本contact####################"
+hive -f antiFraudOneDegree_contact.sql
+echo "############开始执行脚本device####################"
+hive -f antiFraudOneDegree_device.sql
+echo "############开始执行脚本email####################"
+hive -f antiFraudOneDegree_email.sql
+echo "############开始执行脚本emergency####################"
+hive -f antiFraudOneDegree_emergency.sql
+echo "############开始执行脚本idcard####################"
+hive -f antiFraudOneDegree_idcard.sql
+echo "############开始执行脚本myphone####################"
+hive -f antiFraudOneDegree_myphone.sql
