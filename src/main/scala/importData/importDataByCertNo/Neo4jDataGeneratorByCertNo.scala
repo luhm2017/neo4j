@@ -58,8 +58,8 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
           } catch {
             //异常情况处理
             case e: Exception => {
-              println("createNode failure，current filename"+ currentFilePath +"，curent line" + i + " content:" + line + " \n" /*+
-                "exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString*/)
+              println("createNode failure，current filename"+ currentFilePath +"，curent line" + i + " content:" + line + " \n" +
+                "exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString)
               logger.info("createNode failure，current filename"+ currentFilePath +"，curent line" + i + " content:" + line + " \n" /*+
                 "exception:" + e.getMessage + " \n" + "exception2:" + e.getStackTraceString*/)
             }
@@ -161,14 +161,15 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
   def createNodeSetProperty(graphdb: GraphDatabaseService, list: java.util.List[String]): Unit = {
     //先解析实体列表
     //实体创建顺序依据源数据文件字段顺序
-    var certNo = list.get(0) //身份证
-    val mobileSet = list.get(1) //申请手机
-    val contactMobileSet = list.get(2) //联系人手机
-    val emergencyContactMobileSet = list.get(3) //紧急联系人手机
-    val deviceIdSet = list.get(4) //IMEI
-    val emailSet = list.get(5) //EMAIL
-    val compPhoneSet = list.get(6) //公司电话
-    val loanPanSet = list.get(7) //贷款银行
+    val certNo = list.get(0) //身份证
+    val insertTime = list.get(1) //客户最初始时间
+    val mobileSet = list.get(2) //申请手机
+    val contactMobileSet = list.get(3) //联系人手机
+    val emergencyContactMobileSet = list.get(4) //紧急联系人手机
+    val deviceIdSet = list.get(5) //IMEI
+    val emailSet = list.get(6) //EMAIL
+    val compPhoneSet = list.get(7) //公司电话
+    val loanPanSet = list.get(8) //贷款银行
 
     var apply: Node = null; //申请人
     if (StringUtils.isNotEmpty(certNo)) {
@@ -178,8 +179,8 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
         apply = graphdb.createNode(Labels.Apply) //创建标签
         apply.setProperty(CommonConstant.CONTENTKEY, certNo) //创建字段名称
         //订单节点添加进件属性
-        /*apply.setProperty(CommonConstant.APPLY_DATE,insertTime) //申请时间
-        apply.setProperty(CommonConstant.PRODUCT_NAME,productName) //产品名称
+        apply.setProperty(CommonConstant.APPLY_DATE,insertTime) //申请时间
+        /*apply.setProperty(CommonConstant.PRODUCT_NAME,productName) //产品名称
         apply.setProperty(CommonConstant.PERFORMANCE,performance) // 是否Q标拒绝 other_refuse 或者 q_refuse
         apply.setProperty(CommonConstant.APPLY_STATE,applyState) //申请状态
         apply.setProperty(CommonConstant.APPLY_LAST_STATE,applyLastState) //申请状态名称
@@ -198,13 +199,17 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
 
     //创建设备号，过滤设备号异常数据
     if (StringUtils.isNotEmpty(deviceIdSet) && !"\\N".equals(deviceIdSet) && !"-".equals(deviceIdSet)) {
-      val deviceIds = deviceIdSet.split("##").toList
-      for (deviceId <- deviceIds) {
-
+      val deviceIdLists = deviceIdSet.split("##").toList
+      for (deviceIdList <- deviceIdLists) {
+        //提取时间
+        val deviceId = deviceIdList.split("@@").toList(0)
+        val insertTime = deviceIdList.split("@@").toList(1)
         var imei: Option[Node] = nodeMap.get(deviceId)
         if (!imei.isDefined) {
           val tmpNode = graphdb.createNode(Labels.Device)
           tmpNode.setProperty(CommonConstant.CONTENTKEY, deviceId)
+          //添加时间
+          tmpNode.setProperty(CommonConstant.APPLY_DATE,insertTime)
           nodeMap.put(deviceId, tmpNode)
           imei = nodeMap.get(deviceId)
         }
@@ -214,12 +219,17 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
 
     //申请手机号
     if (StringUtils.isNotEmpty(mobileSet) && !"\\N".equals(mobileSet) && !"-".equals(mobileSet)) {
-      val mobiles = mobileSet.split("##").toList
-      for (mobile <- mobiles) {
+      val mobileLists = mobileSet.split("##").toList
+      for (mobileList <- mobileLists) {
+        //提取时间
+        val mobile = mobileList.split("@@").toList(0)
+        val insertTime = mobileList.split("@@").toList(1)
         var phone: Option[Node] = nodeMap.get(mobile)
         if (!phone.isDefined) {
           val tmpNode = graphdb.createNode(Labels.Phone)
           tmpNode.setProperty(CommonConstant.CONTENTKEY, mobile)
+          //添加时间
+          tmpNode.setProperty(CommonConstant.APPLY_DATE,insertTime)
           nodeMap.put(mobile, tmpNode)
           phone = nodeMap.get(mobile)
         }
@@ -229,12 +239,17 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
 
     //邮箱
     if (StringUtils.isNotEmpty(emailSet) && !"\\N".equals(emailSet) && !"-".equals(emailSet)) {
-      val emails = emailSet.split("##").toList
-      for (email <- emails) {
+      val emailLists = emailSet.split("##").toList
+      for (emailList <- emailLists) {
+        //提取时间
+        val email = emailList.split("@@").toList(0)
+        val insertTime = emailList.split("@@").toList(1)
         var emailNode: Option[Node] = nodeMap.get(email)
         if (!emailNode.isDefined) {
           val tmpNode = graphdb.createNode(Labels.Email)
           tmpNode.setProperty(CommonConstant.CONTENTKEY, email)
+          //添加时间
+          tmpNode.setProperty(CommonConstant.APPLY_DATE,insertTime)
           nodeMap.put(email, tmpNode)
           emailNode = nodeMap.get(email)
         }
@@ -244,12 +259,17 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
 
     //贷款银行卡
     if (StringUtils.isNotEmpty(loanPanSet) && !"\\N".equals(loanPanSet) && !"-".equals(loanPanSet) && !"ds!".equals(loanPanSet)) {
-      val loanPans = loanPanSet.split("##").toList
-      for (loanPan <- loanPans) {
+      val loanPanLists = loanPanSet.split("##").toList
+      for (loanPanList <- loanPanLists) {
+        //提取时间
+        val loanPan = loanPanList.split("@@").toList(0)
+        val insertTime = loanPanList.split("@@").toList(1)
         var bankcard: Option[Node] = nodeMap.get(loanPan)
         if (!bankcard.isDefined) {
           val tmpNode = graphdb.createNode(Labels.BankCard)
           tmpNode.setProperty(CommonConstant.CONTENTKEY, loanPan)
+          //添加时间
+          tmpNode.setProperty(CommonConstant.APPLY_DATE,insertTime)
           nodeMap.put(loanPan, tmpNode)
           bankcard = nodeMap.get(loanPan)
         }
@@ -259,12 +279,17 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
 
     //联系人电话
     if (StringUtils.isNotEmpty(contactMobileSet) && !"\\N".equals(contactMobileSet) && !"-".equals(contactMobileSet)) {
-      val contactMobiles = contactMobileSet.split("##").toList
-      for (contactMobile <- contactMobiles) {
+      val contactMobileLists = contactMobileSet.split("##").toList
+      for (contactMobileList <- contactMobileLists) {
+        //提取时间
+        val contactMobile = contactMobileList.split("@@").toList(0)
+        val insertTime = contactMobileList.split("@@").toList(1)
         var relatives: Option[Node] = nodeMap.get(contactMobile) //节点是否存在，以实体值判断
         if (!relatives.isDefined) {
           val tmpNode = graphdb.createNode(Labels.Phone) //所有电话类，标签均一致
           tmpNode.setProperty(CommonConstant.CONTENTKEY, contactMobile)
+          //添加时间
+          tmpNode.setProperty(CommonConstant.APPLY_DATE,insertTime)
           nodeMap.put(contactMobile, tmpNode)
           relatives = nodeMap.get(contactMobile)
         }
@@ -274,12 +299,17 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
 
     //紧急联系人电话
     if (StringUtils.isNotEmpty(emergencyContactMobileSet) && !"\\N".equals(emergencyContactMobileSet) && !"-".equals(emergencyContactMobileSet)) {
-      val emergencyMobiles = emergencyContactMobileSet.split("##").toList
-      for (emergencyMobile <- emergencyMobiles) {
+      val emergencyMobileLists = emergencyContactMobileSet.split("##").toList
+      for (emergencyMobileList <- emergencyMobileLists) {
+        //提取时间
+        val emergencyMobile = emergencyMobileList.split("@@").toList(0)
+        val insertTime = emergencyMobileList.split("@@").toList(1)
         var relatives: Option[Node] = nodeMap.get(emergencyMobile) //节点是否存在，以实体值判断
         if (!relatives.isDefined) {
           val tmpNode = graphdb.createNode(Labels.Phone) //所有电话类，标签均一致
           tmpNode.setProperty(CommonConstant.CONTENTKEY, emergencyMobile)
+          //添加时间
+          tmpNode.setProperty(CommonConstant.APPLY_DATE,insertTime)
           nodeMap.put(emergencyMobile, tmpNode)
           relatives = nodeMap.get(emergencyMobile)
         }
@@ -289,14 +319,19 @@ class Neo4jDataGeneratorByCertNo /*extends DataGenerator*/ {
 
     //单位电话 companyPhone
     if (StringUtils.isNotEmpty(compPhoneSet) && !"\\N".equals(compPhoneSet) && !"-".equals(compPhoneSet)) {
-      val companyPhones = compPhoneSet.split("##").toList
-      for (companyPhone <- companyPhones) {
+      val companyPhoneLists = compPhoneSet.split("##").toList
+      for (companyPhoneList <- companyPhoneLists) {
+        //提取时间
+        val companyPhone = companyPhoneList.split("@@").toList(0)
+        val insertTime = companyPhoneList.split("@@").toList(1)
         //剔除单位电话中特殊字符
         val companyTele = companyPhone.replace("|", "").replace("-", "")
         var relatives: Option[Node] = nodeMap.get(companyTele) //节点是否存在，以实体值判断
         if (!relatives.isDefined) {
           val tmpNode = graphdb.createNode(Labels.Phone) //所有电话类，标签均一致
           tmpNode.setProperty(CommonConstant.CONTENTKEY, companyTele)
+          //添加时间
+          tmpNode.setProperty(CommonConstant.APPLY_DATE,insertTime)
           nodeMap.put(companyTele, tmpNode)
           relatives = nodeMap.get(companyTele)
         }

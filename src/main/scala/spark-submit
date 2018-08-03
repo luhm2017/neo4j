@@ -47,3 +47,13 @@ nohup ./spark-submit --master yarn-client \
 --driver-class-path /usr/share/java/mysql-connector-java-5.1.46.jar \
 --class exportData.ExportApplyData2ByYear \
 /bigdata/neo4j-1.0-SNAPSHOT.jar fqz fqz_apply_contract_data_day_new 2016-01-01 2016-12-31 > temp2.log  &
+
+--以人为节点导出
+nohup ./spark-submit --master yarn-client \
+--deploy-mode client \
+--conf spark.locality.wait=1 --conf spark.driver.memory=2g \
+--conf spark.executor.cores=40 --total-executor-cores 120 --num-executors 3 --executor-memory 80g \
+--jars /usr/share/java/mysql-connector-java-5.1.46.jar \
+--driver-class-path /usr/share/java/mysql-connector-java-5.1.46.jar \
+--class exportData.exportDataByCertNo.ExportApplyData1ByCertNo \
+/bigdata/neo4j-1.0-SNAPSHOT.jar > temp1.log  &
