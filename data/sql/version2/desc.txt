@@ -1,0 +1,22 @@
+第二版变量调整内容：
+1、好坏样本的定义，只保留案件定性和命中Q表规则的坏样本
+原始版本：
+create table fqz_contract_performance_data as
+select
+a.order_id,a.apply_time,
+case when a.history_due_day >= 30 or d.order_id is not null then 1 when a.history_due_day <=  0 then 0 else 2 end label
+from fqz.r_fqz_order_performance_data  a
+join fqz_apply_contract_data_day_new b on a.order_id = b.order_id
+left join fqz_fraud_contract_data_with_attribute d on a.order_id = d.order_id
+where substr(a.apply_time,1,4) >= 2016
+
+第2版本更新：
+基于 r_fqz_order_performance_data 只取合同中行为定位会黑的数据
+ create table fqz_contract_performance_data_v2 as
+select
+a.order_id,a.apply_time,
+case when  d.order_id is not null then 1 when a.history_due_day <=  0 then 0 else 2 end label
+from fqz.r_fqz_order_performance_data  a
+join fqz_apply_contract_data_day_new b on a.order_id = b.order_id
+left join fqz_fraud_contract_data_with_attribute d on a.order_id = d.order_id
+where substr(a.apply_time,1,4) >= 2016
