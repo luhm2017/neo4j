@@ -78,7 +78,7 @@ object AntiFraudScoreBYCertNoModels /*extends Logging*/{
     }
 
     //坏样本数据
-    val data1 = hc.sql(s"select * from knowledge_graph.cert_no_relation_features  where label = 1 ").map{
+    val data1 = hc.sql(s"select * from knowledge_graph.cert_no_rel ation_features  where label = 1 ").map{
       row =>
         val arr = new ArrayBuffer[Double]()
         //剔除label、contact字段
